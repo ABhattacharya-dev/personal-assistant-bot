@@ -18,6 +18,46 @@ function formatTimestamp(ts, timezone = 'Asia/Kolkata') {
   }
 }
 
+// Tone and persona response adapter
+function applyToneToReply(baseText, tone = 'friendly', name = '', customPrompt = '') {
+  if (!baseText) return baseText;
+  const firstName = name ? name.split(' ')[0] : '';
+
+  if (tone === 'motivated') {
+    if (baseText.startsWith('Saved:')) {
+      return baseText.replace('Saved:', 'Awesome! Recorded') + (firstName ? ` for ${firstName}.` : '') + ' Keep crushing your financial goals! 🚀';
+    }
+    if (baseText.startsWith('Your total spend')) {
+      return `${baseText} Tracking every detail brings financial freedom! 💪`;
+    }
+    if (baseText.startsWith('Saved to memory')) {
+      return `${baseText} Locked in safe and sound! ⭐`;
+    }
+    if (baseText.startsWith('Reminder scheduled')) {
+      return `${baseText} Stay focused and get it done! ⚡`;
+    }
+  } else if (tone === 'formal') {
+    if (baseText.startsWith('Saved:')) {
+      return baseText.replace('Saved:', 'Confirmed. Successfully recorded:');
+    }
+    if (baseText.startsWith('Saved to memory')) {
+      return baseText.replace('Saved to memory vault:', 'Committed to memory vault:');
+    }
+    if (baseText.startsWith('Cancelled')) {
+      return `Notice: ${baseText}`;
+    }
+  } else if (tone === 'casual') {
+    if (baseText.startsWith('Saved:')) {
+      return baseText.replace('Saved:', 'Got it! Logged').replace('(Category:', 'in').replace(')', '');
+    }
+    if (baseText.startsWith('Saved to memory')) {
+      return baseText.replace('Saved to memory vault:', 'Got it:');
+    }
+  }
+
+  return baseText;
+}
+
 // Channel-agnostic Core Assistant Engine
 class AssistantCore {
   constructor(options = {}) {
@@ -49,7 +89,8 @@ class AssistantCore {
 
   // Main entrypoint for processing any incoming message
   async processMessage({ userId, channel = 'web', text = '', attachment = null, timestamp = Date.now() }) {
-    await userRepo.ensureUser(userId, this.defaultTimezone);
+    const user = await userRepo.ensureUser(userId, this.defaultTimezone);
+    const tz = user?.timezone || this.defaultTimezone;
 
     // 1. Handle attachments (e.g. Images)
     if (attachment && (attachment.type === 'image' || attachment.mimeType?.startsWith('image/'))) {
@@ -66,10 +107,17 @@ class AssistantCore {
     }
 
     // 2. Route message through Tier 1 (Fast-Path) & Tier 2 (Model)
-    const routing = await routeUserMessage(userId, text, this.defaultTimezone);
+    const routing = await routeUserMessage(userId, text, tz, user);
 
     // 3. Dispatch action based on routing result
-    return await this.executeAction(userId, channel, text, routing);
+    const reply = await this.executeAction(userId, channel, text, routing);
+
+    // 4. Shape reply with user's persona / tone
+    if (reply && reply.text && user?.tone) {
+      reply.text = applyToneToReply(reply.text, user.tone, user.name, user.system_prompt);
+    }
+
+    return reply;
   }
 
   async executeAction(userId, channel, rawText, routing) {

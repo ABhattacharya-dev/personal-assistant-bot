@@ -14,5 +14,10 @@ module.exports = {
   // Features
   VISION_MODEL_ENABLED: process.env.VISION_MODEL_ENABLED === 'true',
   DEFAULT_TIMEZONE: process.env.DEFAULT_TIMEZONE || 'Asia/Kolkata',
-  REMINDER_CHECK_INTERVAL_MS: parseInt(process.env.REMINDER_CHECK_INTERVAL_MS || '3000', 10)
+  REMINDER_CHECK_INTERVAL_MS: parseInt(process.env.REMINDER_CHECK_INTERVAL_MS || '3000', 10),
+
+  // AWS Cognito Authentication
+  COGNITO_REGION: process.env.COGNITO_REGION || 'ap-south-1',
+  COGNITO_USER_POOL_ID: process.env.COGNITO_USER_POOL_ID || 'ap-south-1_OJ4bi0EIU',
+  COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID || '6go9rqfft62c1l6rlg4anljgis'
 };

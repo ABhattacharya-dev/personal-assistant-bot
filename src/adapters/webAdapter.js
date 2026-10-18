@@ -2,11 +2,35 @@ const express = require('express');
 const { all } = require('../database/db');
 const reminderRepo = require('../database/reminderRepo');
 const userRepo = require('../database/userRepo');
+const cognitoService = require('../services/cognitoService');
 
 function createWebAdapter(assistant) {
   const router = express.Router();
   // Map of active SSE connections: userId -> Set<res>
   const activeClients = new Map();
+
+  // Helper to extract authenticated user from Bearer token
+  async function resolveUserFromReq(req) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7).trim();
+      try {
+        const cognitoUser = await cognitoService.getUser(token);
+        if (cognitoUser && cognitoUser.id) {
+          await userRepo.ensureUser(cognitoUser.id, 'Asia/Kolkata', {
+            email: cognitoUser.email,
+            name: cognitoUser.name,
+            tone: cognitoUser.tone,
+            system_prompt: cognitoUser.customPrompt
+          });
+          return cognitoUser;
+        }
+      } catch (err) {
+        // Token invalid or expired
+      }
+    }
+    return null;
+  }
 
   // Register 'web' channel dispatcher with core assistant
   assistant.registerChannel('web', async (userId, reply) => {
@@ -23,12 +47,144 @@ function createWebAdapter(assistant) {
     }
   });
 
+  // --- AUTHENTICATION & PROFILE ROUTES (AWS COGNITO) ---
+
+  // POST /api/auth/signup: Register via Cognito
+  router.post('/auth/signup', async (req, res) => {
+    try {
+      const { email, password, name = '', tone = 'friendly', customPrompt = '' } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ ok: false, error: 'Email and password are required.' });
+      }
+
+      const result = await cognitoService.signUp({ email, password, name, tone, customPrompt });
+      // Create local user record in SQLite
+      await userRepo.ensureUser(result.userSub, 'Asia/Kolkata', {
+        email,
+        name,
+        tone,
+        system_prompt: customPrompt
+      });
+
+      res.json({
+        ok: true,
+        message: 'Account registered successfully.',
+        userSub: result.userSub
+      });
+    } catch (err) {
+      console.error('[Auth SignUp Error]:', err.message);
+      res.status(400).json({ ok: false, error: err.message });
+    }
+  });
+
+  // POST /api/auth/login: Authenticate via Cognito
+  router.post('/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ ok: false, error: 'Email and password are required.' });
+      }
+
+      const authData = await cognitoService.login({ email, password });
+      // Sync into SQLite
+      await userRepo.ensureUser(authData.user.id, 'Asia/Kolkata', {
+        email: authData.user.email,
+        name: authData.user.name,
+        tone: authData.user.tone,
+        system_prompt: authData.user.customPrompt
+      });
+
+      res.json({
+        ok: true,
+        accessToken: authData.accessToken,
+        idToken: authData.idToken,
+        user: authData.user
+      });
+    } catch (err) {
+      console.error('[Auth Login Error]:', err.message);
+      res.status(401).json({ ok: false, error: err.message || 'Invalid credentials' });
+    }
+  });
+
+  // GET /api/auth/profile: Fetch current user profile
+  router.get('/auth/profile', async (req, res) => {
+    try {
+      const cognitoUser = await resolveUserFromReq(req);
+      if (!cognitoUser) {
+        const userId = (req.query.userId || '').trim();
+        if (userId) {
+          const localUser = await userRepo.getUser(userId);
+          if (localUser) {
+            return res.json({ ok: true, user: localUser });
+          }
+        }
+        return res.status(401).json({ ok: false, error: 'Not authenticated' });
+      }
+
+      const localUser = await userRepo.getUser(cognitoUser.id);
+      res.json({
+        ok: true,
+        user: {
+          ...cognitoUser,
+          ...localUser
+        }
+      });
+    } catch (err) {
+      res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
+  // POST /api/auth/profile: Update user name, tone, and system prompt
+  router.post('/auth/profile', async (req, res) => {
+    try {
+      const { name, tone, customPrompt } = req.body;
+      const authHeader = req.headers.authorization;
+      let targetUserId = null;
+
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7).trim();
+        try {
+          const updatedCognito = await cognitoService.updateUser(token, { name, tone, customPrompt });
+          if (updatedCognito) targetUserId = updatedCognito.id;
+        } catch (e) {
+          console.warn('[Cognito Update]:', e.message);
+        }
+      }
+
+      if (!targetUserId && req.body.userId) {
+        targetUserId = req.body.userId;
+      }
+
+      if (!targetUserId) {
+        return res.status(401).json({ ok: false, error: 'User authentication required to update profile.' });
+      }
+
+      const updatedLocal = await userRepo.updateUserProfile(targetUserId, {
+        name,
+        tone,
+        system_prompt: customPrompt
+      });
+
+      res.json({
+        ok: true,
+        message: 'Profile updated successfully.',
+        user: updatedLocal
+      });
+    } catch (err) {
+      console.error('[Profile Update Error]:', err.message);
+      res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
   // POST /api/message: Process incoming user chat message
   router.post('/message', async (req, res) => {
     try {
-      const { userId = 'default_user', text = '', attachment = null } = req.body;
+      const authUser = await resolveUserFromReq(req);
+      const effectiveUserId = authUser ? authUser.id : (req.body.userId || 'default_user').trim();
+      const { text = '', attachment = null } = req.body;
+
       const normalizedMessage = {
-        userId: userId.trim(),
+        userId: effectiveUserId,
         channel: 'web',
         text: text.trim(),
         attachment,
@@ -105,7 +261,8 @@ function createWebAdapter(assistant) {
   // GET /api/database/records: Return tables and live records for viewer
   router.get('/database/records', async (req, res) => {
     try {
-      const userId = (req.query.userId || '').trim();
+      const authUser = await resolveUserFromReq(req);
+      const userId = (authUser ? authUser.id : (req.query.userId || '')).trim();
       const scope = req.query.scope || 'user';
 
       const tableRows = await all("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");

@@ -140,6 +140,13 @@ The web interface is designed with a sleek, modern slate aesthetic:
 - **Chat History Modal**: Center-blurred modal displaying prior interactions with timestamps, "+ New Chat", and "Clear History".
 - **Floating Input Bar**: Pill-shaped bottom bar with attachment preview chip (`file.png` + remove `✕`), input field, and send button.
 - **Database Explorer Drawer**: Slide-out panel accessible from the side menu displaying all SQLite tables (`expenses`, `reminders`, `memory_vault`, `categories`, `users`, `notifications`) in a responsive tabular view with live search and "My Data" / "All Records" scope toggles.
+- **AWS Cognito Authentication & Profile**: Secure email-based registration and login backed by AWS Cognito (`ap-south-1_OJ4bi0EIU`). Stores user name, selected reply style/tone, and custom system prompt.
+- **Custom AI Persona & Reply Styling**: Configure how the assistant communicates:
+  - ⚡ **Motivated**: Energetic, affirmative, goal-driven with progress momentum.
+  - 👔 **Formal**: Direct, executive, concise, and professional.
+  - ☕ **Casual**: Chill, conversational, and relaxed.
+  - 😊 **Friendly**: Warm, helpful, supportive, and kind.
+  - 📝 **Custom System Instructions**: Custom prompt overrides injected dynamically into both the model context and deterministic fast-path response frames.
 - **Real-Time Push Notifications**: Native Server-Sent Events (SSE) feed (`/api/stream`) for instant reminder delivery and offline catch-up.
 
 ---
@@ -150,6 +157,7 @@ The web interface is designed with a sleek, modern slate aesthetic:
 - Node.js (v18+)
 - SQLite3
 - An Ollama instance (local or remote) OR any OpenAI-compatible API key (Groq, Together, DeepInfra, OpenAI)
+- AWS Cognito User Pool (optional for local testing, default pool provided in `.env.example`)
 
 ### Local Setup
 
@@ -182,6 +190,11 @@ The web interface is designed with a sleek, modern slate aesthetic:
 
    DEFAULT_TIMEZONE=Asia/Kolkata
    REMINDER_CHECK_INTERVAL_MS=3000
+
+   # AWS Cognito User Pool
+   COGNITO_REGION=ap-south-1
+   COGNITO_USER_POOL_ID=ap-south-1_OJ4bi0EIU
+   COGNITO_CLIENT_ID=6go9rqfft62c1l6rlg4anljgis
    ```
 
 4. **Start the assistant**:

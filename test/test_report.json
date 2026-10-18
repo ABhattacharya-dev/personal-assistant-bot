@@ -1,22 +1,22 @@
 {
-  "timestamp": "2026-10-18T17:35:15.852Z",
+  "timestamp": "2026-10-18T18:35:49.289Z",
   "model": "qwen2.5:3b",
   "endpoint": "http://127.0.0.1:11434/v1",
   "totalTests": 42,
-  "passedCount": 42,
-  "passRate": "100.0%",
-  "avgLatencySec": "5.09",
+  "passedCount": 39,
+  "passRate": "92.9%",
+  "avgLatencySec": "7.29",
   "fastPathCount": 25,
-  "avgFastPathMs": "10",
+  "avgFastPathMs": "5",
   "modelCallCount": 17,
-  "avgModelLatencySec": "12.55",
+  "avgModelLatencySec": "18.01",
   "details": [
     {
       "id": 1,
       "category": "expense_log",
       "text": "rickshaw 10",
       "passed": true,
-      "latencySec": 12.69,
+      "latencySec": 33.68,
       "reply": "Saved: rickshaw for 10 INR (Category: transport)."
     },
     {
@@ -24,7 +24,7 @@
       "category": "expense_log",
       "text": "auto 40",
       "passed": true,
-      "latencySec": 12.59,
+      "latencySec": 27.66,
       "reply": "Saved: auto for 40 INR (Category: transport)."
     },
     {
@@ -32,55 +32,55 @@
       "category": "expense_log",
       "text": "chai 20",
       "passed": true,
-      "latencySec": 12.68,
-      "reply": "Saved: chai for 20 INR (Category: transport)."
+      "latencySec": 13.1,
+      "reply": "Saved: chai for 20 INR (Category: snacks)."
     },
     {
       "id": 4,
       "category": "expense_log",
       "text": "bijli bill 1200",
       "passed": true,
-      "latencySec": 13.69,
-      "reply": "Saved: bijli bill for 1200 INR (Category: transport)."
+      "latencySec": 29.91,
+      "reply": "Saved: bijli bill for 1200 INR (Category: snacks)."
     },
     {
       "id": 5,
       "category": "expense_log",
       "text": "bajaar theke mach 250 taka",
       "passed": true,
-      "latencySec": 13.26,
-      "reply": "Saved: mach for 250 INR (Category: transport)."
+      "latencySec": 13.56,
+      "reply": "Saved: mach for 250 INR (Category: snacks)."
     },
     {
       "id": 6,
       "category": "expense_log",
       "text": "bought milk for 65",
       "passed": true,
-      "latencySec": 13.14,
-      "reply": "Saved: milk for 65 INR (Category: grocery)."
+      "latencySec": 13.22,
+      "reply": "Saved: milk for 65 INR (Category: snacks)."
     },
     {
       "id": 7,
       "category": "expense_log",
       "text": "petrol 500 rs",
       "passed": true,
-      "latencySec": 13.13,
-      "reply": "Saved: petrol for 500 INR (Category: transport)."
+      "latencySec": 13.57,
+      "reply": "Saved: petrol for 500 INR (Category: snacks)."
     },
     {
       "id": 8,
       "category": "expense_log",
       "text": "dokan theke dim 60 taka dilam",
       "passed": true,
-      "latencySec": 13.14,
-      "reply": "Saved: dim for 60 INR (Category: grocery)."
+      "latencySec": 13.37,
+      "reply": "Saved: dim for 60 INR (Category: snacks)."
     },
     {
       "id": 9,
       "category": "expense_log",
       "text": "paid 150 for uber",
       "passed": true,
-      "latencySec": 12.89,
+      "latencySec": 13.05,
       "reply": "Saved: uber for 150 INR (Category: transport)."
     },
     {
@@ -88,24 +88,24 @@
       "category": "expense_log",
       "text": "lunch with team 1450",
       "passed": true,
-      "latencySec": 14.23,
-      "reply": "Saved: lunch with team for 1450 INR (Category: grocery)."
+      "latencySec": 14.3,
+      "reply": "Saved: lunch with team for 1450 INR (Category: snacks)."
     },
     {
       "id": 11,
       "category": "expense_log",
       "text": "groceries 850",
       "passed": true,
-      "latencySec": 13.3,
-      "reply": "Saved: groceries for 850 INR (Category: grocery)."
+      "latencySec": 13.46,
+      "reply": "Saved: groceries for 850 INR (Category: snacks)."
     },
     {
       "id": 12,
       "category": "expense_log",
       "text": "medicine 320 rupaye",
       "passed": true,
-      "latencySec": 13.19,
-      "reply": "Saved: medicine for 320 INR (Category: grocery)."
+      "latencySec": 13.23,
+      "reply": "Saved: medicine for 320 INR (Category: snacks)."
     },
     {
       "id": 13,
@@ -121,14 +121,14 @@
       "text": "how much on transport?",
       "passed": true,
       "latencySec": 0,
-      "reply": "You spent a total of 2170 INR on transport."
+      "reply": "You spent a total of 200 INR on transport."
     },
     {
       "id": 15,
       "category": "expense_query",
       "text": "what did I spend yesterday?",
       "passed": true,
-      "latencySec": 7.49,
+      "latencySec": 7.54,
       "reply": "Your total spend yesterday is 0 INR across 0 entries."
     },
     {
@@ -152,7 +152,7 @@
       "category": "correction",
       "text": "change that to food",
       "passed": true,
-      "latencySec": 0.02,
+      "latencySec": 0.01,
       "reply": "Updated your last expense (\"medicine\") category to food."
     },
     {
@@ -168,7 +168,7 @@
       "category": "deletion_flow",
       "text": "delete the last one",
       "passed": true,
-      "latencySec": 0.01,
+      "latencySec": 0,
       "reply": "Are you sure you want to delete your last expense: \"medicine\" for 50? Reply..."
     },
     {
@@ -176,7 +176,7 @@
       "category": "deletion_flow",
       "text": "no",
       "passed": true,
-      "latencySec": 0.01,
+      "latencySec": 0,
       "reply": "Cancelled. No changes were made."
     },
     {
@@ -192,48 +192,48 @@
       "category": "deletion_flow",
       "text": "yes",
       "passed": true,
-      "latencySec": 0.02,
+      "latencySec": 0.01,
       "reply": "Deleted expense: \"medicine\" for 50."
     },
     {
       "id": 24,
       "category": "reminder",
       "text": "remind me in 2 minutes to stretch",
-      "passed": true,
-      "latencySec": 11.62,
-      "reply": "Reminder set for 18 Oct 2026, 11:06 pm: \"stretch\"."
+      "passed": false,
+      "latencySec": 35.09,
+      "reply": "I didn't quite catch that. Did you mean an expense, a reminder, or a note t..."
     },
     {
       "id": 25,
       "category": "reminder",
       "text": "remind me every 15 minutes to drink water",
       "passed": true,
-      "latencySec": 9.81,
+      "latencySec": 9.93,
       "reply": "Got it! I will remind you every 15 minutes to drink water."
     },
     {
       "id": 26,
       "category": "reminder",
       "text": "remind me tomorrow at 9 to pay rent",
-      "passed": true,
-      "latencySec": 12.9,
-      "reply": "Reminder set for 18 Oct 2026, 11:10 pm: \"pay rent\"."
+      "passed": false,
+      "latencySec": 18.28,
+      "reply": "I didn't quite catch that. Did you mean an expense, a reminder, or a note t..."
     },
     {
       "id": 27,
       "category": "reminder",
       "text": "kal subah 9 baje yaad dilana meeting hai",
       "passed": true,
-      "latencySec": 13.64,
-      "reply": "Reminder set for 18 Oct 2026, 11:10 pm: \"Kal subah 9 baje yaad dilana\"."
+      "latencySec": 23.27,
+      "reply": "I didn't quite catch that. Did you mean an expense, a reminder, or a note t..."
     },
     {
       "id": 28,
       "category": "reminder",
       "text": "list reminders",
-      "passed": true,
-      "latencySec": 0,
-      "reply": "Active Reminders: 1. \"stretch\" due 18 Oct 2026, 11:06 pm 2. \"pay rent\" due ..."
+      "passed": false,
+      "latencySec": 0.01,
+      "reply": "Active Reminders: 1. \"drink water\" due 19 Oct 2026, 12:20 am (repeats)"
     },
     {
       "id": 29,
@@ -248,15 +248,15 @@
       "category": "reminder",
       "text": "stop the stretch reminder",
       "passed": true,
-      "latencySec": 0.01,
-      "reply": "Cancelled reminders matching \"stretch\" (1 removed)."
+      "latencySec": 0,
+      "reply": "Cancelled reminders matching \"stretch\" (0 removed)."
     },
     {
       "id": 31,
       "category": "memory_vault",
       "text": "I paid Ramesh 500 for the electrician today",
       "passed": true,
-      "latencySec": 0.03,
+      "latencySec": 0.01,
       "reply": "Saved to memory vault: \"I paid Ramesh 500 for the electrician today\"."
     },
     {
@@ -264,7 +264,7 @@
       "category": "memory_vault",
       "text": "I paid Ramesh 200 for plumbing",
       "passed": true,
-      "latencySec": 0.03,
+      "latencySec": 0.01,
       "reply": "Saved to memory vault: \"I paid Ramesh 200 for plumbing\"."
     },
     {
@@ -272,7 +272,7 @@
       "category": "memory_vault",
       "text": "Remember my locker code is 4491",
       "passed": true,
-      "latencySec": 0.01,
+      "latencySec": 0,
       "reply": "Saved to memory vault: \"Remember my locker code is 4491\"."
     },
     {
@@ -281,23 +281,23 @@
       "text": "what is my locker code?",
       "passed": true,
       "latencySec": 0,
-      "reply": "Found 1 record: • Remember my locker code is 4491 (Date: 2026-10-18)"
+      "reply": "Found 1 record: • Remember my locker code is 4491 (Date: 2026-10-19)"
     },
     {
       "id": 35,
       "category": "memory_vault",
       "text": "what did I pay Ramesh?",
       "passed": true,
-      "latencySec": 0.01,
-      "reply": "I found 2 matching records: 1. I paid Ramesh 200 for plumbing (2026-10-18) ..."
+      "latencySec": 0,
+      "reply": "I found 2 matching records: 1. I paid Ramesh 200 for plumbing (2026-10-19) ..."
     },
     {
       "id": 36,
       "category": "memory_vault",
       "text": "1",
       "passed": true,
-      "latencySec": 0.01,
-      "reply": "Here is the record: • I paid Ramesh 200 for plumbing (Date: 2026-10-18)"
+      "latencySec": 0,
+      "reply": "Here is the record: • I paid Ramesh 200 for plumbing (Date: 2026-10-19)"
     },
     {
       "id": 37,
@@ -329,14 +329,14 @@
       "text": "export all my data",
       "passed": true,
       "latencySec": 0,
-      "reply": "Here is your complete data export: ```json {   \"exportDate\": \"2026-10-18T17..."
+      "reply": "Here is your complete data export: ```json {   \"exportDate\": \"2026-10-18T18..."
     },
     {
       "id": 41,
       "category": "privacy",
       "text": "delete all my data",
       "passed": true,
-      "latencySec": 0.01,
+      "latencySec": 0,
       "reply": "⚠️ Are you sure you want to permanently delete all your stored data (expens..."
     },
     {
@@ -344,7 +344,7 @@
       "category": "privacy",
       "text": "yes",
       "passed": true,
-      "latencySec": 0.05,
+      "latencySec": 0.01,
       "reply": "All your stored data (expenses, reminders, and notes) has been permanently ..."
     }
   ]

@@ -4,16 +4,32 @@ const { URL } = require('url');
 const config = require('../config');
 
 // System prompt instructing the model to output strict JSON
-function buildSystemPrompt(existingCategories = [], timezone = 'Asia/Kolkata') {
+function buildSystemPrompt(existingCategories = [], timezone = 'Asia/Kolkata', profile = {}) {
   const catList = existingCategories.length > 0 
     ? existingCategories.join(', ')
     : 'transport, food, groceries, bills, shopping, medical, entertainment, general';
+
+  const tone = profile.tone || 'friendly';
+  const customPrompt = profile.system_prompt || profile.customPrompt || '';
+  const userName = profile.name || '';
+
+  const toneInstructions = {
+    motivated: 'You are high-energy, empowering, positive, motivating, and action-oriented. Inspire the user and celebrate progress!',
+    formal: 'You are polished, professional, concise, direct, and business-like. Maintain an executive polite tone.',
+    casual: 'You are relaxed, informal, modern, like texting a smart peer. Keep it cool and friendly.',
+    friendly: 'You are warm, supportive, polite, and welcoming.'
+  };
+
+  const selectedToneDesc = toneInstructions[tone] || toneInstructions.friendly;
 
   return `You are a fast, precise personal assistant engine.
 Analyze the user's message (which may be in English, Hinglish, Bengali, Hindi, or voice style) and return ONLY a valid JSON object.
 Never output markdown code blocks (no \`\`\`json or \`\`\`), no conversational intro or outro.
 
 User Timezone: ${timezone}.
+${userName ? `User Name: ${userName}.` : ''}
+Persona / Tone Style: ${selectedToneDesc}
+${customPrompt ? `User Custom System Prompt: ${customPrompt}` : ''}
 Current User Categories: [${catList}]. Re-use these categories whenever applicable before creating new ones.
 
 JSON Schema:
@@ -173,8 +189,8 @@ function validateSchema(obj) {
 }
 
 // Main Model Parser with 1 retry on failure
-async function parseMessageWithModel(userMessage, existingCategories = [], timezone = 'Asia/Kolkata') {
-  const systemPrompt = buildSystemPrompt(existingCategories, timezone);
+async function parseMessageWithModel(userMessage, existingCategories = [], timezone = 'Asia/Kolkata', profile = {}) {
+  const systemPrompt = buildSystemPrompt(existingCategories, timezone, profile);
   const messages = [
     { role: 'system', content: systemPrompt },
     { role: 'user', content: userMessage }

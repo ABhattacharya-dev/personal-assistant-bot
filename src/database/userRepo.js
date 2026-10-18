@@ -1,18 +1,74 @@
 const { run, get, all } = require('./db');
 
-async function ensureUser(userId, timezone = 'Asia/Kolkata') {
+async function ensureUser(userId, timezone = 'Asia/Kolkata', profile = {}) {
   const existing = await get(`SELECT * FROM users WHERE id = ?`, [userId]);
+  const now = Date.now();
   if (!existing) {
     await run(
-      `INSERT INTO users (id, timezone, created_at) VALUES (?, ?, ?)`,
-      [userId, timezone, Date.now()]
+      `INSERT INTO users (id, email, name, tone, system_prompt, timezone, created_at, updated_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        profile.email || null,
+        profile.name || null,
+        profile.tone || 'friendly',
+        profile.system_prompt || null,
+        timezone,
+        now,
+        now
+      ]
     );
-    return { id: userId, timezone };
+    return await get(`SELECT * FROM users WHERE id = ?`, [userId]);
+  }
+
+  if (profile.email || profile.name || profile.tone || profile.system_prompt) {
+    await run(
+      `UPDATE users SET 
+        email = COALESCE(?, email),
+        name = COALESCE(?, name),
+        tone = COALESCE(?, tone),
+        system_prompt = COALESCE(?, system_prompt),
+        updated_at = ?
+       WHERE id = ?`,
+      [
+        profile.email || null,
+        profile.name || null,
+        profile.tone || null,
+        profile.system_prompt || null,
+        now,
+        userId
+      ]
+    );
+    return await get(`SELECT * FROM users WHERE id = ?`, [userId]);
   }
   return existing;
 }
 
 async function getUser(userId) {
+  return await get(`SELECT * FROM users WHERE id = ?`, [userId]);
+}
+
+async function updateUserProfile(userId, { name, email, tone, system_prompt, timezone }) {
+  const now = Date.now();
+  await run(
+    `UPDATE users SET
+      name = COALESCE(?, name),
+      email = COALESCE(?, email),
+      tone = COALESCE(?, tone),
+      system_prompt = COALESCE(?, system_prompt),
+      timezone = COALESCE(?, timezone),
+      updated_at = ?
+     WHERE id = ?`,
+    [
+      name !== undefined ? name : null,
+      email !== undefined ? email : null,
+      tone !== undefined ? tone : null,
+      system_prompt !== undefined ? system_prompt : null,
+      timezone !== undefined ? timezone : null,
+      now,
+      userId
+    ]
+  );
   return await get(`SELECT * FROM users WHERE id = ?`, [userId]);
 }
 
@@ -90,6 +146,7 @@ async function deleteAllUserData(userId) {
 module.exports = {
   ensureUser,
   getUser,
+  updateUserProfile,
   setPendingAction,
   getPendingAction,
   clearPendingAction,

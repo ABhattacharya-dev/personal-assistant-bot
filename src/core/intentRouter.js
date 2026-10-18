@@ -149,7 +149,7 @@ function tryFastPathMatch(text, pendingAction = null) {
 }
 
 // Router combining Tier 1 Fast-Path and Tier 2 Model Parsing
-async function routeUserMessage(userId, text, timezone = 'Asia/Kolkata') {
+async function routeUserMessage(userId, text, timezone = 'Asia/Kolkata', profile = {}) {
   const pendingAction = await userRepo.getPendingAction(userId);
 
   // Check Fast-Path first (< 5ms response time)
@@ -160,7 +160,7 @@ async function routeUserMessage(userId, text, timezone = 'Asia/Kolkata') {
 
   // Route to Model
   const categories = await expenseRepo.getUserCategories(userId);
-  const modelResult = await parseMessageWithModel(text, categories, timezone);
+  const modelResult = await parseMessageWithModel(text, categories, timezone, profile);
   return { mode: 'MODEL', ...modelResult };
 }
 

@@ -44,10 +44,38 @@ async function initSchema() {
   await run(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
+      email TEXT,
+      name TEXT,
+      tone TEXT DEFAULT 'friendly',
+      system_prompt TEXT,
       timezone TEXT DEFAULT 'Asia/Kolkata',
-      created_at INTEGER
+      created_at INTEGER,
+      updated_at INTEGER
     )
   `);
+
+  // Migration checks for users table columns
+  try {
+    const userCols = await all(`PRAGMA table_info(users)`);
+    const userColNames = userCols.map(c => c.name);
+    if (!userColNames.includes('email')) {
+      await run(`ALTER TABLE users ADD COLUMN email TEXT`);
+    }
+    if (!userColNames.includes('name')) {
+      await run(`ALTER TABLE users ADD COLUMN name TEXT`);
+    }
+    if (!userColNames.includes('tone')) {
+      await run(`ALTER TABLE users ADD COLUMN tone TEXT DEFAULT 'friendly'`);
+    }
+    if (!userColNames.includes('system_prompt')) {
+      await run(`ALTER TABLE users ADD COLUMN system_prompt TEXT`);
+    }
+    if (!userColNames.includes('updated_at')) {
+      await run(`ALTER TABLE users ADD COLUMN updated_at INTEGER`);
+    }
+  } catch (e) {
+    console.warn('[DB Migration] Users table check:', e.message);
+  }
 
   await run(`
     CREATE TABLE IF NOT EXISTS expenses (

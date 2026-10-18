@@ -849,12 +849,187 @@
       color: var(--text-muted);
       font-size: 0.95rem;
     }
+    /* User Avatar in Top Bar */
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      color: var(--text-hero);
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-hover);
+      text-transform: uppercase;
+    }
+
+    /* Form styles for Auth & Profile Modals */
+    .auth-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 1.75rem;
+    }
+
+    .auth-tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.85rem 0.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .auth-tab-btn.active {
+      color: var(--text-hero);
+      border-bottom-color: var(--text-hero);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-heading);
+    }
+
+    .form-input {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-input);
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus {
+      border-color: var(--border-hover);
+    }
+
+    .form-textarea {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-input);
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      outline: none;
+      resize: vertical;
+      min-height: 70px;
+      transition: border-color 0.15s;
+    }
+
+    .form-textarea:focus {
+      border-color: var(--border-hover);
+    }
+
+    /* Persona / Tone Selector Cards */
+    .tone-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+    }
+
+    .tone-card {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .tone-card:hover {
+      border-color: var(--border-hover);
+      background: var(--badge-bg);
+    }
+
+    .tone-card.selected {
+      border-color: var(--text-hero);
+      background: var(--badge-bg);
+    }
+
+    .tone-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-hero);
+    }
+
+    .tone-desc {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .tone-preview-box {
+      margin-top: 0.5rem;
+      padding: 0.65rem 0.85rem;
+      background: var(--bg-main);
+      border: 1px dashed var(--border-subtle);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-heading);
+      font-style: italic;
+    }
+
+    .form-error {
+      color: #f87171;
+      font-size: 0.82rem;
+      margin-top: 0.4rem;
+      display: none;
+    }
+
+    .form-error.show {
+      display: block;
+    }
+
+    .form-success {
+      color: #4ade80;
+      font-size: 0.82rem;
+      margin-top: 0.4rem;
+      display: none;
+    }
+
+    .form-success.show {
+      display: block;
+    }
   </style>
 </head>
 <body>
 
   <!-- Top Right Utility Actions (History & Theme Toggle) -->
   <div class="top-actions">
+    <!-- Account & AI Persona Settings -->
+    <button class="icon-btn" id="auth-toggle-btn" title="Account & AI Persona">
+      <svg id="auth-icon-logged-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <div id="auth-user-avatar" class="user-avatar" style="display:none;">AB</div>
+    </button>
+
     <!-- History Icon -->
     <button class="icon-btn" id="history-toggle-btn" title="Chat History">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -937,6 +1112,147 @@
     </form>
   </div>
 
+  <!-- Auth Modal (Sign In / Register with Cognito) -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title" id="auth-modal-title">Account Access</h2>
+        <button class="modal-close" id="auth-modal-close-btn" title="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="auth-tab-signin">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="auth-tab-signup">Create Account</button>
+      </div>
+      <div class="modal-body">
+        <!-- Sign In Form -->
+        <form id="signin-form">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="signin-email" placeholder="name@example.com" required autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="signin-password" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+          <div class="form-error" id="signin-error"></div>
+          <button type="submit" class="btn-primary" style="width:100%; margin-top:0.75rem; padding:0.65rem;" id="signin-submit-btn">Sign In</button>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form id="signup-form" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="signup-name" placeholder="Arkaprava (AB)" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="signup-email" placeholder="name@example.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password (min 8 characters)</label>
+            <input type="password" class="form-input" id="signup-password" placeholder="••••••••" required minlength="8" autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">AI Persona / Reply Style</label>
+            <div class="tone-grid" id="signup-tone-grid">
+              <div class="tone-card selected" data-tone="friendly">
+                <div class="tone-header"><span>😊</span> Friendly</div>
+                <div class="tone-desc">Warm, polite, and welcoming.</div>
+              </div>
+              <div class="tone-card" data-tone="casual">
+                <div class="tone-header"><span>☕</span> Casual</div>
+                <div class="tone-desc">Relaxed, modern tech peer.</div>
+              </div>
+              <div class="tone-card" data-tone="formal">
+                <div class="tone-header"><span>👔</span> Formal</div>
+                <div class="tone-desc">Polished, concise, and professional.</div>
+              </div>
+              <div class="tone-card" data-tone="motivated">
+                <div class="tone-header"><span>🌟</span> Motivated</div>
+                <div class="tone-desc">High-energy and empowering.</div>
+              </div>
+            </div>
+            <div class="tone-preview-box" id="signup-tone-preview">
+              "Saved: chai for 25 INR (Category: food). Have a great day!"
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Custom System Prompt (Optional)</label>
+            <textarea class="form-textarea" id="signup-custom-prompt" placeholder="e.g. Always keep answers super short, or provide encouraging comments."></textarea>
+          </div>
+          <div class="form-error" id="signup-error"></div>
+          <button type="submit" class="btn-primary" style="width:100%; margin-top:0.75rem; padding:0.65rem;" id="signup-submit-btn">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile / Account Settings Modal -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Account & AI Persona</h2>
+        <button class="modal-close" id="profile-modal-close-btn" title="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="profile-name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address (Cognito Verified)</label>
+            <input type="email" class="form-input" id="profile-email" disabled style="opacity:0.65; cursor:not-allowed;" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">AI Persona / Reply Style</label>
+            <div class="tone-grid" id="profile-tone-grid">
+              <div class="tone-card" data-tone="friendly">
+                <div class="tone-header"><span>😊</span> Friendly</div>
+                <div class="tone-desc">Warm, polite, and welcoming.</div>
+              </div>
+              <div class="tone-card" data-tone="casual">
+                <div class="tone-header"><span>☕</span> Casual</div>
+                <div class="tone-desc">Relaxed, modern tech peer.</div>
+              </div>
+              <div class="tone-card" data-tone="formal">
+                <div class="tone-header"><span>👔</span> Formal</div>
+                <div class="tone-desc">Polished, concise, and professional.</div>
+              </div>
+              <div class="tone-card" data-tone="motivated">
+                <div class="tone-header"><span>🌟</span> Motivated</div>
+                <div class="tone-desc">High-energy and empowering.</div>
+              </div>
+            </div>
+            <div class="tone-preview-box" id="profile-tone-preview">
+              Preview how the assistant will reply...
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Custom System Prompt (Optional)</label>
+            <textarea class="form-textarea" id="profile-custom-prompt" placeholder="Custom instructions for how the assistant should reply..."></textarea>
+          </div>
+          <div class="form-success" id="profile-success"></div>
+          <div class="form-error" id="profile-error"></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.25rem;">
+            <button type="button" class="btn-text" id="signout-btn" style="color:#f87171;">Sign Out</button>
+            <button type="submit" class="btn-primary" id="save-profile-btn">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Centered Modal Overlay for Chat History -->
   <div class="modal-overlay" id="history-modal">
     <div class="modal-card">
@@ -1013,14 +1329,74 @@
   <div class="toast" id="toast">Copied to clipboard</div>
 
   <script>
-    // --- 1. User & Session Setup ---
-    let userId = localStorage.getItem('assistant_user_id');
+    // --- 1. User & Auth Setup (Cognito Integration) ---
+    let authToken = localStorage.getItem('assistant_auth_token') || null;
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem('assistant_auth_user') || 'null');
+    } catch (e) {}
+
+    let userId = currentUser?.id || localStorage.getItem('assistant_user_id');
     if (!userId) {
       userId = 'user_' + Math.random().toString(36).substring(2, 9);
       localStorage.setItem('assistant_user_id', userId);
     }
 
-    // --- 2. Dynamic Greeting (Hello AB, Good Morning / Afternoon / Evening) ---
+    // Tone preview snippets
+    const tonePreviews = {
+      motivated: '"Awesome! Recorded: chai for 25 INR. Keep crushing your financial goals! 🚀"',
+      formal: '"Confirmed. Successfully recorded: chai for 25 INR (Category: food)."',
+      casual: '"Got it! Logged chai for 25 bucks in food."',
+      friendly: '"Saved: chai for 25 INR (Category: food). Have a great day!"'
+    };
+
+    // Auth & Persona DOM Elements
+    const authToggleBtn = document.getElementById('auth-toggle-btn');
+    const authIconLoggedOut = document.getElementById('auth-icon-logged-out');
+    const authUserAvatar = document.getElementById('auth-user-avatar');
+
+    const authModal = document.getElementById('auth-modal');
+    const authModalCloseBtn = document.getElementById('auth-modal-close-btn');
+    const authTabSignin = document.getElementById('auth-tab-signin');
+    const authTabSignup = document.getElementById('auth-tab-signup');
+    const signinForm = document.getElementById('signin-form');
+    const signupForm = document.getElementById('signup-form');
+    const signinError = document.getElementById('signin-error');
+    const signupError = document.getElementById('signup-error');
+
+    const profileModal = document.getElementById('profile-modal');
+    const profileModalCloseBtn = document.getElementById('profile-modal-close-btn');
+    const profileForm = document.getElementById('profile-form');
+    const profileNameInput = document.getElementById('profile-name');
+    const profileEmailInput = document.getElementById('profile-email');
+    const profileCustomPromptInput = document.getElementById('profile-custom-prompt');
+    const profileTonePreview = document.getElementById('profile-tone-preview');
+    const signupTonePreview = document.getElementById('signup-tone-preview');
+    const profileSuccess = document.getElementById('profile-success');
+    const profileError = document.getElementById('profile-error');
+    const signoutBtn = document.getElementById('signout-btn');
+
+    let signupSelectedTone = 'friendly';
+    let profileSelectedTone = 'friendly';
+
+    // Update greeting and avatar
+    function updateAuthUI() {
+      if (authToken && currentUser) {
+        authIconLoggedOut.style.display = 'none';
+        authUserAvatar.style.display = 'flex';
+        const name = currentUser.name || currentUser.email || 'AB';
+        const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('');
+        authUserAvatar.textContent = initials || 'AB';
+        authToggleBtn.title = `${name} (${currentUser.tone || 'Friendly'})`;
+      } else {
+        authIconLoggedOut.style.display = 'block';
+        authUserAvatar.style.display = 'none';
+        authToggleBtn.title = 'Account & AI Persona';
+      }
+      updateGreeting();
+    }
+
+    // Dynamic greeting based on user's name
     function updateGreeting() {
       const hour = new Date().getHours();
       let timeOfDay = 'Good Morning';
@@ -1029,9 +1405,265 @@
       } else if (hour >= 17 || hour < 4) {
         timeOfDay = 'Good Evening';
       }
-      document.getElementById('greeting-title').textContent = `Hello AB, ${timeOfDay}`;
+      const displayName = currentUser && currentUser.name ? currentUser.name.split(' ')[0] : 'AB';
+      document.getElementById('greeting-title').textContent = `Hello ${displayName}, ${timeOfDay}`;
     }
     updateGreeting();
+    updateAuthUI();
+
+    // Verify and refresh profile from server if token exists
+    async function refreshProfile() {
+      if (!authToken) return;
+      try {
+        const res = await fetch('/api/auth/profile', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const data = await res.json();
+        if (data.ok && data.user) {
+          currentUser = data.user;
+          userId = data.user.id;
+          localStorage.setItem('assistant_auth_user', JSON.stringify(currentUser));
+          updateAuthUI();
+          connectSSE();
+        }
+      } catch (e) {}
+    }
+    refreshProfile();
+
+    // Setup Tone Card Selection in Signup
+    document.querySelectorAll('#signup-tone-grid .tone-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('#signup-tone-grid .tone-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        signupSelectedTone = card.dataset.tone;
+        signupTonePreview.textContent = tonePreviews[signupSelectedTone] || '';
+      });
+    });
+
+    // Setup Tone Card Selection in Profile
+    document.querySelectorAll('#profile-tone-grid .tone-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('#profile-tone-grid .tone-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        profileSelectedTone = card.dataset.tone;
+        profileTonePreview.textContent = tonePreviews[profileSelectedTone] || '';
+      });
+    });
+
+    // Auth Modal Toggle
+    authToggleBtn.addEventListener('click', () => {
+      if (authToken && currentUser) {
+        // Open Profile Modal
+        profileNameInput.value = currentUser.name || '';
+        profileEmailInput.value = currentUser.email || '';
+        profileSelectedTone = currentUser.tone || 'friendly';
+        profileCustomPromptInput.value = currentUser.customPrompt || currentUser.system_prompt || '';
+
+        document.querySelectorAll('#profile-tone-grid .tone-card').forEach(c => {
+          c.classList.toggle('selected', c.dataset.tone === profileSelectedTone);
+        });
+        profileTonePreview.textContent = tonePreviews[profileSelectedTone] || '';
+        profileSuccess.classList.remove('show');
+        profileError.classList.remove('show');
+        profileModal.classList.add('open');
+      } else {
+        // Open Auth Modal
+        signinError.classList.remove('show');
+        signupError.classList.remove('show');
+        authModal.classList.add('open');
+      }
+    });
+
+    authModalCloseBtn.addEventListener('click', () => authModal.classList.remove('open'));
+    profileModalCloseBtn.addEventListener('click', () => profileModal.classList.remove('open'));
+
+    authModal.addEventListener('click', (e) => {
+      if (e.target === authModal) authModal.classList.remove('open');
+    });
+    profileModal.addEventListener('click', (e) => {
+      if (e.target === profileModal) profileModal.classList.remove('open');
+    });
+
+    // Tab switching between Sign In & Sign Up
+    authTabSignin.addEventListener('click', () => {
+      authTabSignin.classList.add('active');
+      authTabSignup.classList.remove('active');
+      signinForm.style.display = 'block';
+      signupForm.style.display = 'none';
+    });
+
+    authTabSignup.addEventListener('click', () => {
+      authTabSignup.classList.add('active');
+      authTabSignin.classList.remove('active');
+      signinForm.style.display = 'none';
+      signupForm.style.display = 'block';
+    });
+
+    // Sign In Submit
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      const submitBtn = document.getElementById('signin-submit-btn');
+
+      signinError.classList.remove('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.ok && data.accessToken) {
+          authToken = data.accessToken;
+          currentUser = data.user;
+          userId = data.user.id;
+          localStorage.setItem('assistant_auth_token', authToken);
+          localStorage.setItem('assistant_auth_user', JSON.stringify(currentUser));
+          updateAuthUI();
+          connectSSE();
+          authModal.classList.remove('open');
+          showToast(`Welcome back, ${currentUser.name || 'AB'}!`);
+        } else {
+          signinError.textContent = data.error || 'Invalid email or password.';
+          signinError.classList.add('show');
+        }
+      } catch (err) {
+        signinError.textContent = `Connection error: ${err.message}`;
+        signinError.classList.add('show');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+
+    // Sign Up Submit
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      const customPrompt = document.getElementById('signup-custom-prompt').value.trim();
+      const submitBtn = document.getElementById('signup-submit-btn');
+
+      signupError.classList.remove('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            tone: signupSelectedTone,
+            customPrompt
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          // Auto login after sign up
+          const loginRes = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const loginData = await loginRes.json();
+          if (loginData.ok && loginData.accessToken) {
+            authToken = loginData.accessToken;
+            currentUser = loginData.user;
+            userId = loginData.user.id;
+            localStorage.setItem('assistant_auth_token', authToken);
+            localStorage.setItem('assistant_auth_user', JSON.stringify(currentUser));
+            updateAuthUI();
+            connectSSE();
+            authModal.classList.remove('open');
+            showToast(`Account created! Welcome, ${currentUser.name || 'AB'}!`);
+          } else {
+            // Switch to sign in tab
+            authTabSignin.click();
+            document.getElementById('signin-email').value = email;
+            signinError.textContent = 'Account created. Please sign in.';
+            signinError.classList.add('show');
+          }
+        } else {
+          signupError.textContent = data.error || 'Failed to create account.';
+          signupError.classList.add('show');
+        }
+      } catch (err) {
+        signupError.textContent = `Error: ${err.message}`;
+        signupError.classList.add('show');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+
+    // Profile Settings Submit (Save name, tone, custom prompt)
+    profileForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = profileNameInput.value.trim();
+      const customPrompt = profileCustomPromptInput.value.trim();
+      const saveBtn = document.getElementById('save-profile-btn');
+
+      profileSuccess.classList.remove('show');
+      profileError.classList.remove('show');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('/api/auth/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+          },
+          body: JSON.stringify({
+            userId,
+            name,
+            tone: profileSelectedTone,
+            customPrompt
+          })
+        });
+        const data = await res.json();
+        if (data.ok && data.user) {
+          currentUser = { ...currentUser, ...data.user };
+          localStorage.setItem('assistant_auth_user', JSON.stringify(currentUser));
+          updateAuthUI();
+          profileSuccess.textContent = 'Preferences saved! The assistant will now reply in your selected style.';
+          profileSuccess.classList.add('show');
+          showToast('AI Persona updated!');
+          setTimeout(() => profileModal.classList.remove('open'), 1200);
+        } else {
+          profileError.textContent = data.error || 'Failed to save changes.';
+          profileError.classList.add('show');
+        }
+      } catch (err) {
+        profileError.textContent = `Error: ${err.message}`;
+        profileError.classList.add('show');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      }
+    });
+
+    // Sign Out
+    signoutBtn.addEventListener('click', () => {
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('assistant_auth_token');
+      localStorage.removeItem('assistant_auth_user');
+      userId = localStorage.getItem('assistant_user_id') || 'default_user';
+      updateAuthUI();
+      connectSSE();
+      profileModal.classList.remove('open');
+      showToast('Signed out');
+    });
 
     // --- 3. Dark / Light Mode Switch ---
     const htmlEl = document.documentElement;
@@ -1308,7 +1940,10 @@
       try {
         const res = await fetch('/api/message', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+          },
           body: JSON.stringify({
             userId,
             text,
@@ -1333,10 +1968,14 @@
     });
 
     // --- 7. Server-Sent Events (SSE) for Real-Time Reminders ---
+    let sseSource = null;
     function connectSSE() {
-      const evtSource = new EventSource(`/api/stream?userId=${userId}`);
+      if (sseSource) {
+        try { sseSource.close(); } catch (e) {}
+      }
+      sseSource = new EventSource(`/api/stream?userId=${encodeURIComponent(userId)}`);
 
-      evtSource.onmessage = (e) => {
+      sseSource.onmessage = (e) => {
         try {
           const data = JSON.parse(e.data);
           if (data.type === 'connected') return;
@@ -1348,9 +1987,9 @@
         } catch (err) {}
       };
 
-      evtSource.onerror = () => {
-        evtSource.close();
-        setTimeout(connectSSE, 4000);
+      sseSource.onerror = () => {
+        try { sseSource.close(); } catch (e) {}
+        setTimeout(connectSSE, 5000);
       };
     }
     connectSSE();
@@ -1419,7 +2058,11 @@
     async function loadDatabaseRecords() {
       tableMetaText.textContent = 'Fetching records from assistant.db...';
       try {
-        const res = await fetch(`/api/database/records?userId=${encodeURIComponent(userId)}&scope=${currentScope}`);
+        const res = await fetch(`/api/database/records?userId=${encodeURIComponent(userId)}&scope=${currentScope}`, {
+          headers: {
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+          }
+        });
         const data = await res.json();
         if (!data.ok || !data.tables) {
           tableMetaText.textContent = 'Failed to load records.';
