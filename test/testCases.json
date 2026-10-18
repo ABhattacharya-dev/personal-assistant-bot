@@ -1,0 +1,338 @@
+[
+  {
+    "id": 1,
+    "category": "expense_log",
+    "text": "rickshaw 10",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "rickshaw", "10"],
+    "description": "Standard short expense"
+  },
+  {
+    "id": 2,
+    "category": "expense_log",
+    "text": "auto 40",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "auto", "40"],
+    "description": "Short auto fare expense"
+  },
+  {
+    "id": 3,
+    "category": "expense_log",
+    "text": "chai 20",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "chai", "20"],
+    "description": "Short chai expense"
+  },
+  {
+    "id": 4,
+    "category": "expense_log",
+    "text": "bijli bill 1200",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "1200"],
+    "description": "Bill expense"
+  },
+  {
+    "id": 5,
+    "category": "expense_log",
+    "text": "bajaar theke mach 250 taka",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "250"],
+    "description": "Bengali fish market expense"
+  },
+  {
+    "id": 6,
+    "category": "expense_log",
+    "text": "bought milk for 65",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "milk", "65"],
+    "description": "English grocery expense"
+  },
+  {
+    "id": 7,
+    "category": "expense_log",
+    "text": "petrol 500 rs",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "petrol", "500"],
+    "description": "Fuel expense"
+  },
+  {
+    "id": 8,
+    "category": "expense_log",
+    "text": "dokan theke dim 60 taka dilam",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "60"],
+    "description": "Bengali eggs expense"
+  },
+  {
+    "id": 9,
+    "category": "expense_log",
+    "text": "paid 150 for uber",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "150"],
+    "description": "Transport taxi expense"
+  },
+  {
+    "id": 10,
+    "category": "expense_log",
+    "text": "lunch with team 1450",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "1450"],
+    "description": "Team lunch expense"
+  },
+  {
+    "id": 11,
+    "category": "expense_log",
+    "text": "groceries 850",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "850"],
+    "description": "General groceries"
+  },
+  {
+    "id": 12,
+    "category": "expense_log",
+    "text": "medicine 320 rupaye",
+    "expectedIntent": "log_expense",
+    "expectedKeywords": ["Saved", "320"],
+    "description": "Hinglish medicine expense"
+  },
+  {
+    "id": 13,
+    "category": "expense_query",
+    "text": "how much did I spend today?",
+    "expectedIntent": "query_expense",
+    "expectedKeywords": ["spend", "total"],
+    "description": "Daily total spend query (computed from DB)"
+  },
+  {
+    "id": 14,
+    "category": "expense_query",
+    "text": "how much on transport?",
+    "expectedIntent": "query_expense",
+    "expectedKeywords": ["spent", "transport"],
+    "description": "Category total query"
+  },
+  {
+    "id": 15,
+    "category": "expense_query",
+    "text": "what did I spend yesterday?",
+    "expectedIntent": "query_expense",
+    "expectedKeywords": ["yesterday"],
+    "description": "Yesterday spend query"
+  },
+  {
+    "id": 16,
+    "category": "expense_query",
+    "text": "how much did I spend this month?",
+    "expectedIntent": "query_expense",
+    "expectedKeywords": ["month"],
+    "description": "Month spend query"
+  },
+  {
+    "id": 17,
+    "category": "expense_query",
+    "text": "how much did I spend on food?",
+    "expectedIntent": "query_expense",
+    "expectedKeywords": ["spent", "food"],
+    "description": "Food category query"
+  },
+  {
+    "id": 18,
+    "category": "correction",
+    "text": "change that to food",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Updated", "food"],
+    "description": "Change category of last expense"
+  },
+  {
+    "id": 19,
+    "category": "correction",
+    "text": "change amount to 50",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Updated", "50"],
+    "description": "Change amount of last expense"
+  },
+  {
+    "id": 20,
+    "category": "deletion_flow",
+    "text": "delete the last one",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Are you sure", "delete"],
+    "description": "Delete prompt requiring confirmation"
+  },
+  {
+    "id": 21,
+    "category": "deletion_flow",
+    "text": "no",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Cancelled", "No changes"],
+    "description": "Cancel deletion"
+  },
+  {
+    "id": 22,
+    "category": "deletion_flow",
+    "text": "delete the last one",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Are you sure"],
+    "description": "Re-prompt deletion"
+  },
+  {
+    "id": 23,
+    "category": "deletion_flow",
+    "text": "yes",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Deleted expense"],
+    "description": "Confirm deletion"
+  },
+  {
+    "id": 24,
+    "category": "reminder",
+    "text": "remind me in 2 minutes to stretch",
+    "expectedIntent": "set_reminder",
+    "expectedKeywords": ["Reminder set", "stretch"],
+    "description": "One-off relative reminder"
+  },
+  {
+    "id": 25,
+    "category": "reminder",
+    "text": "remind me every 15 minutes to drink water",
+    "expectedIntent": "set_reminder",
+    "expectedKeywords": ["remind you every", "drink water"],
+    "description": "Recurring interval reminder"
+  },
+  {
+    "id": 26,
+    "category": "reminder",
+    "text": "remind me tomorrow at 9 to pay rent",
+    "expectedIntent": "set_reminder",
+    "expectedKeywords": ["Reminder", "rent"],
+    "description": "Tomorrow reminder"
+  },
+  {
+    "id": 27,
+    "category": "reminder",
+    "text": "kal subah 9 baje yaad dilana meeting hai",
+    "expectedIntent": "set_reminder",
+    "expectedKeywords": ["Reminder"],
+    "description": "Hinglish reminder"
+  },
+  {
+    "id": 28,
+    "category": "reminder",
+    "text": "list reminders",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Reminders", "stretch"],
+    "description": "List active pending reminders"
+  },
+  {
+    "id": 29,
+    "category": "reminder",
+    "text": "stop the water reminder",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Cancelled", "water"],
+    "description": "Cancel specific recurring reminder"
+  },
+  {
+    "id": 30,
+    "category": "reminder",
+    "text": "stop the stretch reminder",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["Cancelled"],
+    "description": "Cancel one-off reminder"
+  },
+  {
+    "id": 31,
+    "category": "memory_vault",
+    "text": "I paid Ramesh 500 for the electrician today",
+    "expectedIntent": "save_memory",
+    "expectedKeywords": ["Saved to memory vault", "Ramesh", "500"],
+    "description": "Save payment record 1"
+  },
+  {
+    "id": 32,
+    "category": "memory_vault",
+    "text": "I paid Ramesh 200 for plumbing",
+    "expectedIntent": "save_memory",
+    "expectedKeywords": ["Saved to memory vault", "Ramesh", "200"],
+    "description": "Save payment record 2"
+  },
+  {
+    "id": 33,
+    "category": "memory_vault",
+    "text": "Remember my locker code is 4491",
+    "expectedIntent": "save_memory",
+    "expectedKeywords": ["Saved to memory vault", "4491"],
+    "description": "Save arbitrary secret note"
+  },
+  {
+    "id": 34,
+    "category": "memory_vault",
+    "text": "what is my locker code?",
+    "expectedIntent": "query_memory",
+    "expectedKeywords": ["4491"],
+    "description": "Retrieve specific note"
+  },
+  {
+    "id": 35,
+    "category": "memory_vault",
+    "text": "what did I pay Ramesh?",
+    "expectedIntent": "query_memory",
+    "expectedKeywords": ["matching records", "electrician", "plumbing"],
+    "description": "Disambiguation trigger for multiple matches"
+  },
+  {
+    "id": 36,
+    "category": "memory_vault",
+    "text": "1",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["record", "Ramesh"],
+    "description": "Select first disambiguation option"
+  },
+  {
+    "id": 37,
+    "category": "memory_vault",
+    "text": "what did I pay Suresh?",
+    "expectedIntent": "query_memory",
+    "expectedKeywords": ["couldn't find"],
+    "description": "Query missing entity"
+  },
+  {
+    "id": 38,
+    "category": "ambiguity",
+    "text": "50",
+    "expectedIntent": "ambiguous",
+    "expectedKeywords": ["expense for", "What was"],
+    "description": "Ambiguous bare number asks clarifying question"
+  },
+  {
+    "id": 39,
+    "category": "ambiguity",
+    "text": "payment",
+    "expectedIntent": "ambiguous",
+    "expectedKeywords": ["clarify"],
+    "description": "Ambiguous single word asks clarification"
+  },
+  {
+    "id": 40,
+    "category": "privacy",
+    "text": "export all my data",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["expenses", "exportDate"],
+    "description": "Export complete JSON"
+  },
+  {
+    "id": 41,
+    "category": "privacy",
+    "text": "delete all my data",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["permanently delete all", "yes"],
+    "description": "Delete all data confirmation prompt"
+  },
+  {
+    "id": 42,
+    "category": "privacy",
+    "text": "yes",
+    "expectedIntent": "fast_path",
+    "expectedKeywords": ["permanently deleted"],
+    "description": "Confirm wipe all user data"
+  }
+]

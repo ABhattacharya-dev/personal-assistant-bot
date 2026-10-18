@@ -1,0 +1,16 @@
+{
+  "name": "personal-assistant-bot",
+  "version": "1.0.0",
+  "description": "Chat-based personal assistant with Expense Tracking, Reminders, and Memory Vault running on EC2 + Ollama",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test/run_suite.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}

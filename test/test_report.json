@@ -1,0 +1,351 @@
+{
+  "timestamp": "2026-10-18T17:35:15.852Z",
+  "model": "qwen2.5:3b",
+  "endpoint": "http://127.0.0.1:11434/v1",
+  "totalTests": 42,
+  "passedCount": 42,
+  "passRate": "100.0%",
+  "avgLatencySec": "5.09",
+  "fastPathCount": 25,
+  "avgFastPathMs": "10",
+  "modelCallCount": 17,
+  "avgModelLatencySec": "12.55",
+  "details": [
+    {
+      "id": 1,
+      "category": "expense_log",
+      "text": "rickshaw 10",
+      "passed": true,
+      "latencySec": 12.69,
+      "reply": "Saved: rickshaw for 10 INR (Category: transport)."
+    },
+    {
+      "id": 2,
+      "category": "expense_log",
+      "text": "auto 40",
+      "passed": true,
+      "latencySec": 12.59,
+      "reply": "Saved: auto for 40 INR (Category: transport)."
+    },
+    {
+      "id": 3,
+      "category": "expense_log",
+      "text": "chai 20",
+      "passed": true,
+      "latencySec": 12.68,
+      "reply": "Saved: chai for 20 INR (Category: transport)."
+    },
+    {
+      "id": 4,
+      "category": "expense_log",
+      "text": "bijli bill 1200",
+      "passed": true,
+      "latencySec": 13.69,
+      "reply": "Saved: bijli bill for 1200 INR (Category: transport)."
+    },
+    {
+      "id": 5,
+      "category": "expense_log",
+      "text": "bajaar theke mach 250 taka",
+      "passed": true,
+      "latencySec": 13.26,
+      "reply": "Saved: mach for 250 INR (Category: transport)."
+    },
+    {
+      "id": 6,
+      "category": "expense_log",
+      "text": "bought milk for 65",
+      "passed": true,
+      "latencySec": 13.14,
+      "reply": "Saved: milk for 65 INR (Category: grocery)."
+    },
+    {
+      "id": 7,
+      "category": "expense_log",
+      "text": "petrol 500 rs",
+      "passed": true,
+      "latencySec": 13.13,
+      "reply": "Saved: petrol for 500 INR (Category: transport)."
+    },
+    {
+      "id": 8,
+      "category": "expense_log",
+      "text": "dokan theke dim 60 taka dilam",
+      "passed": true,
+      "latencySec": 13.14,
+      "reply": "Saved: dim for 60 INR (Category: grocery)."
+    },
+    {
+      "id": 9,
+      "category": "expense_log",
+      "text": "paid 150 for uber",
+      "passed": true,
+      "latencySec": 12.89,
+      "reply": "Saved: uber for 150 INR (Category: transport)."
+    },
+    {
+      "id": 10,
+      "category": "expense_log",
+      "text": "lunch with team 1450",
+      "passed": true,
+      "latencySec": 14.23,
+      "reply": "Saved: lunch with team for 1450 INR (Category: grocery)."
+    },
+    {
+      "id": 11,
+      "category": "expense_log",
+      "text": "groceries 850",
+      "passed": true,
+      "latencySec": 13.3,
+      "reply": "Saved: groceries for 850 INR (Category: grocery)."
+    },
+    {
+      "id": 12,
+      "category": "expense_log",
+      "text": "medicine 320 rupaye",
+      "passed": true,
+      "latencySec": 13.19,
+      "reply": "Saved: medicine for 320 INR (Category: grocery)."
+    },
+    {
+      "id": 13,
+      "category": "expense_query",
+      "text": "how much did I spend today?",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "Your total spend today is 4915 INR across 12 entries."
+    },
+    {
+      "id": 14,
+      "category": "expense_query",
+      "text": "how much on transport?",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "You spent a total of 2170 INR on transport."
+    },
+    {
+      "id": 15,
+      "category": "expense_query",
+      "text": "what did I spend yesterday?",
+      "passed": true,
+      "latencySec": 7.49,
+      "reply": "Your total spend yesterday is 0 INR across 0 entries."
+    },
+    {
+      "id": 16,
+      "category": "expense_query",
+      "text": "how much did I spend this month?",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "Your total spend this month is 4915 INR across 12 entries."
+    },
+    {
+      "id": 17,
+      "category": "expense_query",
+      "text": "how much did I spend on food?",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "You spent a total of 0 INR on food."
+    },
+    {
+      "id": 18,
+      "category": "correction",
+      "text": "change that to food",
+      "passed": true,
+      "latencySec": 0.02,
+      "reply": "Updated your last expense (\"medicine\") category to food."
+    },
+    {
+      "id": 19,
+      "category": "correction",
+      "text": "change amount to 50",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Updated your last expense (\"medicine\") amount to 50."
+    },
+    {
+      "id": 20,
+      "category": "deletion_flow",
+      "text": "delete the last one",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Are you sure you want to delete your last expense: \"medicine\" for 50? Reply..."
+    },
+    {
+      "id": 21,
+      "category": "deletion_flow",
+      "text": "no",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Cancelled. No changes were made."
+    },
+    {
+      "id": 22,
+      "category": "deletion_flow",
+      "text": "delete the last one",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Are you sure you want to delete your last expense: \"medicine\" for 50? Reply..."
+    },
+    {
+      "id": 23,
+      "category": "deletion_flow",
+      "text": "yes",
+      "passed": true,
+      "latencySec": 0.02,
+      "reply": "Deleted expense: \"medicine\" for 50."
+    },
+    {
+      "id": 24,
+      "category": "reminder",
+      "text": "remind me in 2 minutes to stretch",
+      "passed": true,
+      "latencySec": 11.62,
+      "reply": "Reminder set for 18 Oct 2026, 11:06 pm: \"stretch\"."
+    },
+    {
+      "id": 25,
+      "category": "reminder",
+      "text": "remind me every 15 minutes to drink water",
+      "passed": true,
+      "latencySec": 9.81,
+      "reply": "Got it! I will remind you every 15 minutes to drink water."
+    },
+    {
+      "id": 26,
+      "category": "reminder",
+      "text": "remind me tomorrow at 9 to pay rent",
+      "passed": true,
+      "latencySec": 12.9,
+      "reply": "Reminder set for 18 Oct 2026, 11:10 pm: \"pay rent\"."
+    },
+    {
+      "id": 27,
+      "category": "reminder",
+      "text": "kal subah 9 baje yaad dilana meeting hai",
+      "passed": true,
+      "latencySec": 13.64,
+      "reply": "Reminder set for 18 Oct 2026, 11:10 pm: \"Kal subah 9 baje yaad dilana\"."
+    },
+    {
+      "id": 28,
+      "category": "reminder",
+      "text": "list reminders",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "Active Reminders: 1. \"stretch\" due 18 Oct 2026, 11:06 pm 2. \"pay rent\" due ..."
+    },
+    {
+      "id": 29,
+      "category": "reminder",
+      "text": "stop the water reminder",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Cancelled reminders matching \"water\" (1 removed)."
+    },
+    {
+      "id": 30,
+      "category": "reminder",
+      "text": "stop the stretch reminder",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Cancelled reminders matching \"stretch\" (1 removed)."
+    },
+    {
+      "id": 31,
+      "category": "memory_vault",
+      "text": "I paid Ramesh 500 for the electrician today",
+      "passed": true,
+      "latencySec": 0.03,
+      "reply": "Saved to memory vault: \"I paid Ramesh 500 for the electrician today\"."
+    },
+    {
+      "id": 32,
+      "category": "memory_vault",
+      "text": "I paid Ramesh 200 for plumbing",
+      "passed": true,
+      "latencySec": 0.03,
+      "reply": "Saved to memory vault: \"I paid Ramesh 200 for plumbing\"."
+    },
+    {
+      "id": 33,
+      "category": "memory_vault",
+      "text": "Remember my locker code is 4491",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Saved to memory vault: \"Remember my locker code is 4491\"."
+    },
+    {
+      "id": 34,
+      "category": "memory_vault",
+      "text": "what is my locker code?",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "Found 1 record: • Remember my locker code is 4491 (Date: 2026-10-18)"
+    },
+    {
+      "id": 35,
+      "category": "memory_vault",
+      "text": "what did I pay Ramesh?",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "I found 2 matching records: 1. I paid Ramesh 200 for plumbing (2026-10-18) ..."
+    },
+    {
+      "id": 36,
+      "category": "memory_vault",
+      "text": "1",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "Here is the record: • I paid Ramesh 200 for plumbing (Date: 2026-10-18)"
+    },
+    {
+      "id": 37,
+      "category": "memory_vault",
+      "text": "what did I pay Suresh?",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "I couldn't find any saved notes or payments matching \"Suresh\"."
+    },
+    {
+      "id": 38,
+      "category": "ambiguity",
+      "text": "50",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "I noticed an amount of 50. What was this expense for (e.g., \"taxi 50\")?"
+    },
+    {
+      "id": 39,
+      "category": "ambiguity",
+      "text": "payment",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "Could you clarify what you'd like to record? (e.g., \"rickshaw 50\" or \"paid ..."
+    },
+    {
+      "id": 40,
+      "category": "privacy",
+      "text": "export all my data",
+      "passed": true,
+      "latencySec": 0,
+      "reply": "Here is your complete data export: ```json {   \"exportDate\": \"2026-10-18T17..."
+    },
+    {
+      "id": 41,
+      "category": "privacy",
+      "text": "delete all my data",
+      "passed": true,
+      "latencySec": 0.01,
+      "reply": "⚠️ Are you sure you want to permanently delete all your stored data (expens..."
+    },
+    {
+      "id": 42,
+      "category": "privacy",
+      "text": "yes",
+      "passed": true,
+      "latencySec": 0.05,
+      "reply": "All your stored data (expenses, reminders, and notes) has been permanently ..."
+    }
+  ]
+}
