@@ -1379,19 +1379,35 @@
     let signupSelectedTone = 'friendly';
     let profileSelectedTone = 'friendly';
 
-    // Update greeting and avatar
+    // Update greeting, avatar, and enforce login lock
     function updateAuthUI() {
-      if (authToken && currentUser) {
+      const isAuthenticated = !!(authToken && currentUser);
+      if (isAuthenticated) {
         authIconLoggedOut.style.display = 'none';
         authUserAvatar.style.display = 'flex';
         const name = currentUser.name || currentUser.email || 'AB';
         const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('');
         authUserAvatar.textContent = initials || 'AB';
         authToggleBtn.title = `${name} (${currentUser.tone || 'Friendly'})`;
+        authModalCloseBtn.style.display = 'flex';
+        const titleEl = document.getElementById('auth-modal-title');
+        if (titleEl) titleEl.textContent = 'Account Access';
+        messageInput.disabled = false;
+        messageInput.placeholder = 'Type your Message';
+        sendButton.disabled = false;
+        authModal.classList.remove('open');
       } else {
         authIconLoggedOut.style.display = 'block';
         authUserAvatar.style.display = 'none';
-        authToggleBtn.title = 'Account & AI Persona';
+        authToggleBtn.title = 'Sign In / Register';
+        authModalCloseBtn.style.display = 'none';
+        const titleEl = document.getElementById('auth-modal-title');
+        if (titleEl) titleEl.textContent = 'Sign In Required';
+        messageInput.disabled = true;
+        messageInput.placeholder = 'Please sign in to chat with the assistant...';
+        sendButton.disabled = true;
+        // Force authentication modal open
+        authModal.classList.add('open');
       }
       updateGreeting();
     }
@@ -1405,15 +1421,22 @@
       } else if (hour >= 17 || hour < 4) {
         timeOfDay = 'Good Evening';
       }
-      const displayName = currentUser && currentUser.name ? currentUser.name.split(' ')[0] : 'AB';
-      document.getElementById('greeting-title').textContent = `Hello ${displayName}, ${timeOfDay}`;
+      if (currentUser && currentUser.name) {
+        const displayName = currentUser.name.split(' ')[0];
+        document.getElementById('greeting-title').textContent = `Hello ${displayName}, ${timeOfDay}`;
+      } else {
+        document.getElementById('greeting-title').textContent = `Welcome, ${timeOfDay}`;
+      }
     }
     updateGreeting();
     updateAuthUI();
 
     // Verify and refresh profile from server if token exists
     async function refreshProfile() {
-      if (!authToken) return;
+      if (!authToken) {
+        updateAuthUI();
+        return;
+      }
       try {
         const res = await fetch('/api/auth/profile', {
           headers: { 'Authorization': `Bearer ${authToken}` }
@@ -1425,6 +1448,13 @@
           localStorage.setItem('assistant_auth_user', JSON.stringify(currentUser));
           updateAuthUI();
           connectSSE();
+        } else {
+          authToken = null;
+          currentUser = null;
+          localStorage.removeItem('assistant_auth_token');
+          localStorage.removeItem('assistant_auth_user');
+          updateAuthUI();
+          showToast('Session expired. Please sign in again.');
         }
       } catch (e) {}
     }
@@ -1474,14 +1504,26 @@
       }
     });
 
-    authModalCloseBtn.addEventListener('click', () => authModal.classList.remove('open'));
+    authModalCloseBtn.addEventListener('click', () => {
+      if (authToken && currentUser) {
+        authModal.classList.remove('open');
+      }
+    });
     profileModalCloseBtn.addEventListener('click', () => profileModal.classList.remove('open'));
 
     authModal.addEventListener('click', (e) => {
-      if (e.target === authModal) authModal.classList.remove('open');
+      if (e.target === authModal && authToken && currentUser) {
+        authModal.classList.remove('open');
+      }
     });
     profileModal.addEventListener('click', (e) => {
       if (e.target === profileModal) profileModal.classList.remove('open');
+    });
+
+    messageInput.addEventListener('click', () => {
+      if (!authToken || !currentUser) {
+        authModal.classList.add('open');
+      }
     });
 
     // Tab switching between Sign In & Sign Up
@@ -1658,11 +1700,16 @@
       currentUser = null;
       localStorage.removeItem('assistant_auth_token');
       localStorage.removeItem('assistant_auth_user');
-      userId = localStorage.getItem('assistant_user_id') || 'default_user';
-      updateAuthUI();
-      connectSSE();
+      userId = 'default_user';
+      conversationDiv.innerHTML = '';
+      greetingBox.style.display = 'block';
       profileModal.classList.remove('open');
-      showToast('Signed out');
+      if (sseSource) {
+        try { sseSource.close(); } catch (e) {}
+        sseSource = null;
+      }
+      updateAuthUI();
+      showToast('Signed out. Please sign in to continue.');
     });
 
     // --- 3. Dark / Light Mode Switch ---
@@ -1747,6 +1794,11 @@
     }
 
     function openHistoryModal() {
+      if (!authToken || !currentUser) {
+        showToast('Please sign in to view chat history.');
+        authModal.classList.add('open');
+        return;
+      }
       renderHistoryModal();
       historyModal.classList.add('open');
     }
@@ -1918,6 +1970,11 @@
     // Submit handler
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!authToken || !currentUser) {
+        showToast('Please sign in or create an account first.');
+        authModal.classList.add('open');
+        return;
+      }
       const text = messageInput.value.trim();
       if (!text && !currentAttachment) return;
 
@@ -1951,6 +2008,17 @@
           })
         });
 
+        if (res.status === 401) {
+          conversationDiv.removeChild(exchangeEl);
+          authToken = null;
+          currentUser = null;
+          localStorage.removeItem('assistant_auth_token');
+          localStorage.removeItem('assistant_auth_user');
+          updateAuthUI();
+          showToast('Session expired. Please sign in again.');
+          return;
+        }
+
         const data = await res.json();
         conversationDiv.removeChild(exchangeEl);
 
@@ -1972,13 +2040,20 @@
     function connectSSE() {
       if (sseSource) {
         try { sseSource.close(); } catch (e) {}
+        sseSource = null;
       }
-      sseSource = new EventSource(`/api/stream?userId=${encodeURIComponent(userId)}`);
+      if (!authToken || !currentUser) return;
+
+      sseSource = new EventSource(`/api/stream?token=${encodeURIComponent(authToken)}`);
 
       sseSource.onmessage = (e) => {
         try {
           const data = JSON.parse(e.data);
           if (data.type === 'connected') return;
+          if (data.type === 'error' && data.text && data.text.includes('Authentication')) {
+            if (sseSource) { try { sseSource.close(); } catch (err) {} sseSource = null; }
+            return;
+          }
           if (data.text) {
             greetingBox.style.display = 'none';
             appendExchange('Reminder Notification', data.text, null, false);
@@ -1989,7 +2064,9 @@
 
       sseSource.onerror = () => {
         try { sseSource.close(); } catch (e) {}
-        setTimeout(connectSSE, 5000);
+        if (authToken) {
+          setTimeout(connectSSE, 5000);
+        }
       };
     }
     connectSSE();
@@ -2014,6 +2091,11 @@
     let selectedTableName = null;
 
     function openDbDrawer() {
+      if (!authToken || !currentUser) {
+        showToast('Please sign in to view database records.');
+        authModal.classList.add('open');
+        return;
+      }
       dbDrawer.classList.add('open');
       dbDrawerOverlay.classList.add('open');
       loadDatabaseRecords();
@@ -2063,6 +2145,18 @@
             ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
           }
         });
+
+        if (res.status === 401) {
+          tableMetaText.textContent = 'Authentication required.';
+          authToken = null;
+          currentUser = null;
+          localStorage.removeItem('assistant_auth_token');
+          localStorage.removeItem('assistant_auth_user');
+          updateAuthUI();
+          showToast('Session expired. Please sign in again.');
+          return;
+        }
+
         const data = await res.json();
         if (!data.ok || !data.tables) {
           tableMetaText.textContent = 'Failed to load records.';

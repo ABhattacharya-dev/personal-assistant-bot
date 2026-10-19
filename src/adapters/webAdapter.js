@@ -9,11 +9,17 @@ function createWebAdapter(assistant) {
   // Map of active SSE connections: userId -> Set<res>
   const activeClients = new Map();
 
-  // Helper to extract authenticated user from Bearer token
+  // Helper to extract authenticated user from Bearer token or token query param
   async function resolveUserFromReq(req) {
+    let token = null;
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7).trim();
+      token = authHeader.substring(7).trim();
+    } else if (req.query && req.query.token) {
+      token = String(req.query.token).trim();
+    }
+
+    if (token) {
       try {
         const cognitoUser = await cognitoService.getUser(token);
         if (cognitoUser && cognitoUser.id) {
@@ -111,14 +117,7 @@ function createWebAdapter(assistant) {
     try {
       const cognitoUser = await resolveUserFromReq(req);
       if (!cognitoUser) {
-        const userId = (req.query.userId || '').trim();
-        if (userId) {
-          const localUser = await userRepo.getUser(userId);
-          if (localUser) {
-            return res.json({ ok: true, user: localUser });
-          }
-        }
-        return res.status(401).json({ ok: false, error: 'Not authenticated' });
+        return res.status(401).json({ ok: false, error: 'Authentication required. Please sign in.' });
       }
 
       const localUser = await userRepo.getUser(cognitoUser.id);
@@ -137,29 +136,23 @@ function createWebAdapter(assistant) {
   // POST /api/auth/profile: Update user name, tone, and system prompt
   router.post('/auth/profile', async (req, res) => {
     try {
+      const authUser = await resolveUserFromReq(req);
+      if (!authUser) {
+        return res.status(401).json({ ok: false, error: 'Authentication required to update profile.' });
+      }
+
       const { name, tone, customPrompt } = req.body;
       const authHeader = req.headers.authorization;
-      let targetUserId = null;
-
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7).trim();
         try {
-          const updatedCognito = await cognitoService.updateUser(token, { name, tone, customPrompt });
-          if (updatedCognito) targetUserId = updatedCognito.id;
+          await cognitoService.updateUser(token, { name, tone, customPrompt });
         } catch (e) {
           console.warn('[Cognito Update]:', e.message);
         }
       }
 
-      if (!targetUserId && req.body.userId) {
-        targetUserId = req.body.userId;
-      }
-
-      if (!targetUserId) {
-        return res.status(401).json({ ok: false, error: 'User authentication required to update profile.' });
-      }
-
-      const updatedLocal = await userRepo.updateUserProfile(targetUserId, {
+      const updatedLocal = await userRepo.updateUserProfile(authUser.id, {
         name,
         tone,
         system_prompt: customPrompt
@@ -180,7 +173,13 @@ function createWebAdapter(assistant) {
   router.post('/message', async (req, res) => {
     try {
       const authUser = await resolveUserFromReq(req);
-      const effectiveUserId = authUser ? authUser.id : (req.body.userId || 'default_user').trim();
+      if (!authUser) {
+        return res.status(401).json({
+          ok: false,
+          error: 'Authentication required. Please sign in to use the assistant.'
+        });
+      }
+      const effectiveUserId = authUser.id;
       const { text = '', attachment = null } = req.body;
 
       const normalizedMessage = {
@@ -204,7 +203,16 @@ function createWebAdapter(assistant) {
 
   // GET /api/stream: SSE connection for real-time live reminders & push notifications
   router.get('/stream', async (req, res) => {
-    const userId = (req.query.userId || 'default_user').trim();
+    const authUser = await resolveUserFromReq(req);
+    if (!authUser) {
+      res.writeHead(401, {
+        'Content-Type': 'text/event-stream',
+        'Access-Control-Allow-Origin': '*'
+      });
+      res.write(`data: ${JSON.stringify({ type: 'error', text: 'Authentication required.' })}\n\n`);
+      return res.end();
+    }
+    const userId = authUser.id;
 
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
@@ -247,7 +255,11 @@ function createWebAdapter(assistant) {
 
   // GET /api/export: Direct export download
   router.get('/export', async (req, res) => {
-    const userId = (req.query.userId || 'default_user').trim();
+    const authUser = await resolveUserFromReq(req);
+    if (!authUser) {
+      return res.status(401).json({ error: 'Authentication required to export data.' });
+    }
+    const userId = authUser.id;
     try {
       const data = await userRepo.exportAllUserData(userId);
       res.setHeader('Content-Type', 'application/json');
@@ -262,7 +274,13 @@ function createWebAdapter(assistant) {
   router.get('/database/records', async (req, res) => {
     try {
       const authUser = await resolveUserFromReq(req);
-      const userId = (authUser ? authUser.id : (req.query.userId || '')).trim();
+      if (!authUser) {
+        return res.status(401).json({
+          ok: false,
+          error: 'Authentication required to view database records.'
+        });
+      }
+      const userId = authUser.id;
       const scope = req.query.scope || 'user';
 
       const tableRows = await all("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
